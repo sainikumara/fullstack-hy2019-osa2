@@ -1,72 +1,45 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import App from "./App";
 
-const App = () => {
-  const course = {
+const courses = [
+  {
     name: "Half Stack -sovelluskehitys",
+    id: 1,
     parts: [
-    {
-      name: "Reactin perusteet",
-      exercises: 10
-    },
-    {
-      name: "Tiedonvälitys propseilla",
-      exercises: 7
-    },
-    {
-      name: "Komponenttien tila",
-      exercises: 14
-    }
-  ]
-}
+      {
+        name: "Reactin perusteet",
+        exercises: 10,
+        id: 1
+      },
+      {
+        name: "Tiedonvälitys propseilla",
+        exercises: 7,
+        id: 2
+      },
+      {
+        name: "Komponenttien tila",
+        exercises: 14,
+        id: 3
+      }
+    ]
+  },
+  {
+    name: "Node.js",
+    id: 2,
+    parts: [
+      {
+        name: "Routing",
+        exercises: 3,
+        id: 1
+      },
+      {
+        name: "Middlewaret",
+        exercises: 7,
+        id: 2
+      }
+    ]
+  }
+];
 
-  return (
-    <div>
-      <Header course={course.name} />
-      <Content parts={course.parts} />
-      <Total parts={course.parts} />
-    </div>
-  );
-};
-
-const Header = props => {
-  return (
-    <div>
-      <h1>{props.course}</h1>
-    </div>
-  );
-};
-
-const Content = props => {
-  return (
-    <div>
-      <Part part={props.parts[0]} />
-      <Part part={props.parts[1]} />
-      <Part part={props.parts[2]} />
-    </div>
-  );
-};
-
-const Part = props => {
-  return (
-    <div>
-      <p>
-        {props.part.name} {props.part.exercises}
-      </p>
-    </div>
-  );
-};
-
-const Total = props => {
-  console.log(props);
-  return (
-    <div>
-      <p>
-        yhteensä {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises }
-        tehtävää
-      </p>
-    </div>
-  );
-};
-
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App courses={courses} />, document.getElementById("root"));
