@@ -6,6 +6,10 @@ import personService from './services/persons';
 
 const App = () => {
   const [ persons, setPersons] = useState([])
+  const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
+  const [ searchContact, setSearchContact ] = useState('')
+  const [ successMessage, setSuccessMessage ] = useState(null)
 
   const hookForGettingContacts = () => {
     personService
@@ -14,10 +18,6 @@ const App = () => {
   }
 
   useEffect(hookForGettingContacts, [])
-
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ searchContact, setSearchContact ] = useState('')
 
   const handleContactSearch = (event) => {
     setSearchContact(event.target.value)
@@ -48,6 +48,12 @@ const App = () => {
       .then(addedContact => {
         setPersons(persons.concat(addedContact))
       })
+      setSuccessMessage(
+        `Henkilön ${personObject.name} numero lisätty yhteystietoihin`
+      )
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     } else {
       if(window.confirm(`Haluatko varmasti muuttaa kontaktin ${personObject.name} numeroa?`)){
         const person = persons.find(p => p.name === personObject.name)
@@ -56,6 +62,12 @@ const App = () => {
           .then(returnedContact => {
             setPersons(persons.map(p => p.id !== person.id ? p : returnedContact))
           })
+        setSuccessMessage(
+          `Henkilön ${personObject.name} numero muutettu`
+        )
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
       }
     }
 
@@ -64,18 +76,40 @@ const App = () => {
   }
 
   const deleteContact = (id) => {
+    let poistettava = persons.find(p => p.id === id)
     if (window.confirm('Haluatko varmasti poistaa numeron')) {
       personService
         .deleteObject(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
         })
+      setSuccessMessage(
+        `Henkilön ${poistettava.name} tiedot poistettu`
+      )
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     }
+  }
+
+  const Notification = ({ message }) => {
+    if (message === null) {
+      return null
+    }
+  
+    return (
+      <div className='success'>
+        {message}
+      </div>
+    )
   }
 
   return (
     <div>
       <h1>Puhelinluettelo</h1>
+
+      <Notification message={successMessage} />
+
       <Filter
         searchContact={searchContact}
         handleContactSearch={handleContactSearch}/>
