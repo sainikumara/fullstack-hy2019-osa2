@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Contacts from './components/contacts';
 import AddContactForm from './components/addcontactform';
 import Filter from './components/filter';
+import personService from './services/persons';
 
 const App = () => {
-  const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Martti Tienari', number: '040-123456' },
-    { name: 'Arto Järvinen', number: '040-123456' },
-    { name: 'Lea Kutvonen', number: '040-123456' }
-  ])
+  const [ persons, setPersons] = useState([])
+
+  const hookForGettingContacts = () => {
+    personService
+    .getAll()
+    .then(initialContacts => setPersons(initialContacts))
+  }
+
+  useEffect(hookForGettingContacts, [])
+
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchContact, setSearchContact ] = useState('')
@@ -38,13 +43,34 @@ const App = () => {
     }
     
     if (persons.every(person => person.name !== newName)) {
-      setPersons(persons.concat(personObject))
+      personService
+      .create(personObject)
+      .then(addedContact => {
+        setPersons(persons.concat(addedContact))
+      })
     } else {
-      alert(`${newName} on jo luettelossa`);
+      if(window.confirm(`Haluatko varmasti muuttaa kontaktin ${personObject.name} numeroa?`)){
+        const person = persons.find(p => p.name === personObject.name)
+        personService
+          .update(person.id, personObject)
+          .then(returnedContact => {
+            setPersons(persons.map(p => p.id !== person.id ? p : returnedContact))
+          })
+      }
     }
 
     setNewName('')
     setNewNumber('')
+  }
+
+  const deleteContact = (id) => {
+    if (window.confirm('Haluatko varmasti poistaa numeron')) {
+      personService
+        .deleteObject(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
   }
 
   return (
@@ -65,7 +91,10 @@ const App = () => {
         />
 
       <h2>Numerot</h2>
-      <Contacts persons={contactsToShow} />
+      <Contacts
+        persons={contactsToShow}
+        deleteContact={deleteContact}
+        />
     </div>
   )
 }
