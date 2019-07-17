@@ -5,7 +5,7 @@ import Filter from './components/filter';
 import personService from './services/persons';
 
 const App = () => {
-  const [ persons, setPersons] = useState([])
+  const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchContact, setSearchContact ] = useState('')
